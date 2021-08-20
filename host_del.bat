@@ -6,17 +6,18 @@ if "%~1" neq "Admin" (
   cd /d "%~dp0"
 )
 
-FOR /F "eol=# tokens=1,* delims==" %%A IN (../.env) DO (
+FOR /F "eol=# tokens=1,* delims==" %%A IN (.env) DO (
     if %%A==HOST_NAME (
         set HOST_NAME=%%B
     )
 )
-if not %HOST_NAME%=="" (
-    cd /d "%windir%\system32\drivers\etc"
-    find "127.0.0.1 %HOST_NAME%" < hosts || echo 127.0.0.1 %HOST_NAME%>>hosts
-    echo.
-    echo Added "%HOST_NAME%"
-)
+
+cd /d "%windir%\system32\drivers\etc"
+SET "TEMP_HOSTS=%TEMP%\%RANDOM%__hosts"
+
+attrib -R -S -H hosts
+FINDSTR /V "%HOST_NAME%" hosts > "%TEMP_HOSTS%"
+COPY /b/v/y "%TEMP_HOSTS%" hosts
 
 */
 
